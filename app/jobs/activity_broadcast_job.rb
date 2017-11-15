@@ -10,7 +10,7 @@ class ActivityBroadcastJob < ApplicationJob
   def render_activities(activity)
     user = activity.user
     doing = user.activities.includes(:tag).doing.first
-    today = user.activities.includes(:tag).finished
+    today = user.activities.finished.group(:rfid).sum(:duration)
     ApplicationController.renderer.render('activities/index.json', format: :js, assigns: { doing: doing, today: today })
   end
 end

@@ -5,7 +5,7 @@ import dateFormat from 'dateformat'
 export default class Activies extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { activities: [], doing: null };
+    this.state = { activities: [], today: [], doing: null };
   }
 
   setupActionCable(that){
@@ -18,7 +18,7 @@ export default class Activies extends React.Component {
       received: function(data) {
         //TODO: Parsing the data shouldn't be necessary
         var parsedData = JSON.parse(data);
-        that.setState({ activities: parsedData.finished, doing: parsedData.doing });
+        that.setState({ activities: parsedData.finished, today: parsedData.today, doing: parsedData.doing });
       }
     });
   }
@@ -27,7 +27,8 @@ export default class Activies extends React.Component {
     const headers = { headers: { "Authorization": "Bearer " + this.props.auth_token }}
     axios.get('/activities?format=json', headers)
     .then(function (response) {
-      that.setState({ activities: response.data['finished'], doing: response.data['doing'] });
+      console.log(response);
+      that.setState({ activities: response.data['finished'], today: response.data['today'], doing: response.data['doing'] });
     })
     .catch(function (error) {
       console.log(error);
@@ -59,27 +60,35 @@ export default class Activies extends React.Component {
     const doing = this.state.doing;
     if(this.state.doing){
       return (
-        <div>
-          <span>Doing</span>
-          <div key={doing.id}>
-            <span>{doing.id} - </span>
-            <span>{this.prettyDate(doing.start_time)} - </span>
-            <span>{doing.tag.name}</span>
+        <main role="main" className="container">
+          <div>
+            <h1>{doing.tag.name} since {dateFormat((new Date(doing.start_time)), "h:MM:ss TT")}</h1>
           </div>
-          <span>Finished Activities</span>
-            {this.state.activities.map(activity =>(
-              <div key={activity.id}>
-                <span>{activity.id} - </span>
-                <span>{this.prettyDate(activity.start_time)} - </span>
-                <span>{this.prettyDate(activity.end_time)} - </span>
-                <span>{this.toHHMMSS(activity.duration)} - </span>
-                <span>{activity.tag.name}</span>
-              </div>
-            ))}
-        </div>
+          <div>
+            <h1>Today</h1>
+            <div className="table-responsive">
+              <table className="table table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.keys(this.state.today).map(key =>(
+                    <tr key={key}>
+                      <td>{key}</td>
+                      <td>{this.toHHMMSS(this.state.today[key])}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+          </div>
+          </div>
+        </main>
       );
     }else {
-      return(<span>{this.props.auth_token} -  Loading ...</span>)
+      return(<span>Loading ...</span>)
     }
   }
 }

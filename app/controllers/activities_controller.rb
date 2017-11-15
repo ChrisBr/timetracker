@@ -5,7 +5,7 @@ class ActivitiesController < ApplicationController
   # GET /activities.json
   def index
     @doing = @current_user.activities.includes(:tag).doing.first
-    @today = @current_user.activities.includes(:tag).finished
+    @today = @current_user.activities.finished.group(:rfid).sum(:duration)
   end
 
   # POST /activities
