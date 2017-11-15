@@ -12,7 +12,7 @@ class ActivitiesController < ApplicationController
   # POST /activities.json
   def create
     @current_user.activities.doing.map { |activity| activity.finish! }
-    tag = Tag.find_or_initialize_by(rfid: params[:rfid], user: @current_user)
+    tag = Tag.find_or_initialize_by(rfid: params[:rfid].chomp, user: @current_user)
     @activity = tag.activities.build
 
     respond_to do |format|

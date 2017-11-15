@@ -11,7 +11,7 @@ class Activity < ApplicationRecord
 
   # TODO: Add default ordering
 
-  validates_presence_of :tag_id, :start_time
+  validates_presence_of :start_time
 
   def finish!(time = Time.now)
     self.end_time = time
