@@ -4,10 +4,16 @@
 //= require action_cable
 //= require_self
 //= require_tree ./channels
+//
+// (function() {
+//   this.App || (this.App = {});
+//
+//   App.cable = ActionCable.createConsumer('/cable?auth_token=' + sessionStorage.getItem('auth_token'));
+//
+// }).call(this);
 
-(function() {
+function loadActioncable(){
   this.App || (this.App = {});
 
-  App.cable = ActionCable.createConsumer();
-
-}).call(this);
+  App.cable = ActionCable.createConsumer('/cable?auth_token=' + sessionStorage.getItem('auth_token'));
+}

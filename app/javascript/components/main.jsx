@@ -10,7 +10,7 @@ export default class Main extends React.Component {
     if(sessionStorage.getItem('auth_token')){
       this.state = {
         auth_token: sessionStorage.getItem('auth_token'),
-        email: sessionStorage.getItem('email'), 
+        email: sessionStorage.getItem('email'),
         loggedIn: true
       };
     }
@@ -30,6 +30,7 @@ export default class Main extends React.Component {
   }
 
   handleLogout(event){
+    // TODO: Unsubscribe from the activities channel
     this.setState({loggedIn: false, auth_token: '', email: '', password: ''});
     sessionStorage.removeItem('auth_token');
   }
@@ -56,6 +57,7 @@ export default class Main extends React.Component {
       return(
         <App
           email={this.state.email}
+          auth_token={this.state.auth_token}
           handleLogout={this.handleLogout}
         />
       );

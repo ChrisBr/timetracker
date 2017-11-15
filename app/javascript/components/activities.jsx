@@ -8,17 +8,36 @@ export default class Activies extends React.Component {
     this.state = { activities: [], doing: null };
   }
 
-  componentDidMount() {
-    const that = this;
-    const headers = { headers: { "Authorization": "Bearer " + sessionStorage.getItem('auth_token') }}
+  setupActionCable(that){
+    // TODO: initialize the App instance in react
+    loadActioncable();
+    App.activities = App.cable.subscriptions.create('ActivitiesChannel', {
+      connected: function(data){
+        console.log("Connected");
+      },
+      received: function(data) {
+        //TODO: Parsing the data shouldn't be necessary
+        var parsedData = JSON.parse(data);
+        that.setState({ activities: parsedData.finished, doing: parsedData.doing });
+      }
+    });
+  }
+
+  loadInitialData(that){
+    const headers = { headers: { "Authorization": "Bearer " + this.props.auth_token }}
     axios.get('/activities?format=json', headers)
     .then(function (response) {
-      console.log(response.data)
       that.setState({ activities: response.data['finished'], doing: response.data['doing'] });
     })
     .catch(function (error) {
       console.log(error);
     });
+  }
+
+  componentDidMount() {
+    const that = this;
+    this.setupActionCable(that);
+    this.loadInitialData(that)
   }
 
   prettyDate(date) {
@@ -38,9 +57,7 @@ export default class Activies extends React.Component {
 
   render() {
     const doing = this.state.doing;
-    if(!this.state.doing){
-      return(<span>loading ...</span>)
-    }else {
+    if(this.state.doing){
       return (
         <div>
           <span>Doing</span>
@@ -61,6 +78,8 @@ export default class Activies extends React.Component {
             ))}
         </div>
       );
+    }else {
+      return(<span>{this.props.auth_token} -  Loading ...</span>)
     }
   }
 }

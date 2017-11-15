@@ -1,9 +1,15 @@
 class Activity < ApplicationRecord
   belongs_to :tag
+  delegate :user, to: :tag, allow_nil: true
+
   before_validation :set_default_values
+  after_create_commit { ActivityBroadcastJob.perform_later self }
 
   scope :finished, -> { where.not(end_time: nil) }
   scope :doing, -> { where(end_time: nil) }
+  # TODO: Add scopes for today, week and month
+
+  # TODO: Add default ordering
 
   validates_presence_of :tag_id, :start_time
 

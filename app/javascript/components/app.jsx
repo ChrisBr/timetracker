@@ -10,7 +10,7 @@ export default class App extends React.Component {
           email={this.props.email}
           handleLogout={this.props.handleLogout}
         />
-        <Activities />
+        <Activities auth_token={this.props.auth_token} />
       </div>
     );
   }
