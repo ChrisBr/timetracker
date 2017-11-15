@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :activities
+  resources :tasks
+  resources :tags
   get '/', to: 'pages#index'
   post 'authenticate', to: 'authentication#authenticate'
 

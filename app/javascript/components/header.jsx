@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 
-export default class LoginForm extends React.Component {
+export default class Header extends React.Component {
   render() {
     return (
       <div>

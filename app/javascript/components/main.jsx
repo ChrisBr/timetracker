@@ -1,6 +1,6 @@
 import React from 'react'
 import LoginForm from './login_form'
-import Header from './header'
+import App from './app'
 import axios from 'axios'
 
 export default class Main extends React.Component {
@@ -8,7 +8,11 @@ export default class Main extends React.Component {
     super(props);
     this.state = { email: '', password: '', auth_token: '', loggedIn: false };
     if(sessionStorage.getItem('auth_token')){
-      this.state = { auth_token: sessionStorage.getItem('auth_token'), loggedIn: true };
+      this.state = {
+        auth_token: sessionStorage.getItem('auth_token'),
+        email: sessionStorage.getItem('email'), 
+        loggedIn: true
+      };
     }
 
     this.handleLogin = this.handleLogin.bind(this);
@@ -50,7 +54,7 @@ export default class Main extends React.Component {
   render() {
     if(this.state.loggedIn) {
       return(
-        <Header
+        <App
           email={this.state.email}
           handleLogout={this.handleLogout}
         />

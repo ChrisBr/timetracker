@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  rfid: MyString
+  name: MyString
+  colour: MyString
+
+two:
+  rfid: MyString
+  name: MyString
+  colour: MyString
