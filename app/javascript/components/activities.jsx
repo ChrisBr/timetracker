@@ -1,11 +1,13 @@
 import React from 'react'
 import axios from 'axios'
 import dateFormat from 'dateformat'
+import Box from './box'
+import DailyDoughnutChart from './daily_doughnut_chart'
 
 export default class Activies extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { activities: [], today: [], doing: null };
+    this.state = { loaded: false };
   }
 
   setupActionCable(that){
@@ -13,12 +15,18 @@ export default class Activies extends React.Component {
     loadActioncable();
     App.activities = App.cable.subscriptions.create('ActivitiesChannel', {
       connected: function(data){
-        console.log("Connected");
+        console.log("Socket connected");
       },
       received: function(data) {
-        //TODO: Parsing the data shouldn't be necessary
         var parsedData = JSON.parse(data);
-        that.setState({ activities: parsedData.finished, today: parsedData.today, doing: parsedData.doing });
+        that.setState({
+          daily_doughnut_chart: parsedData.daily_doughnut_chart,
+          doing: parsedData.doing,
+          first_entry_today: parsedData.first_entry_today,
+          total_entries_today: parsedData.total_entries_today,
+          hours_today: parsedData.hours_today,
+          loaded: true
+        });
       }
     });
   }
@@ -27,8 +35,14 @@ export default class Activies extends React.Component {
     const headers = { headers: { "Authorization": "Bearer " + this.props.auth_token }}
     axios.get('/activities?format=json', headers)
     .then(function (response) {
-      console.log(response);
-      that.setState({ activities: response.data['finished'], today: response.data['today'], doing: response.data['doing'] });
+      that.setState({
+        daily_doughnut_chart: response.data.daily_doughnut_chart,
+        doing: response.data.doing,
+        first_entry_today: response.data.first_entry_today,
+        total_entries_today: response.data.total_entries_today,
+        hours_today: response.data.hours_today,
+        loaded: true
+      });
     })
     .catch(function (error) {
       console.log(error);
@@ -58,33 +72,21 @@ export default class Activies extends React.Component {
 
   render() {
     const doing = this.state.doing;
-    if(this.state.doing){
+    if(this.state.loaded){
       return (
         <main role="main" className="container">
-          <div>
-            <h1>{doing.tag.name} since {dateFormat((new Date(doing.start_time)), "h:MM:ss TT")}</h1>
+        <div className="row">
+          <div className="col-12">
+            <h1>Today, {dateFormat((new Date()), "dddd, mmmm dS, yyyy")}</h1>
           </div>
-          <div>
-            <h1>Today</h1>
-            <div className="table-responsive">
-              <table className="table table-striped">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.keys(this.state.today).map(key =>(
-                    <tr key={key}>
-                      <td>{key}</td>
-                      <td>{this.toHHMMSS(this.state.today[key])}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-          </div>
-          </div>
+        </div>
+        <DailyDoughnutChart data={this.state.daily_doughnut_chart} height={100} />
+        <div className="row pt-5">
+          <Box title="Current Activity" value={this.state.doing} />
+          <Box title="Hours Logged" value={this.toHHMMSS(this.state.hours_today)} />
+          <Box title="Time Entries" value={this.state.total_entries_today} />
+          <Box title="Logged In" value={dateFormat((new Date(this.state.first_entry_today)), "h:MM:ss TT")} />
+        </div>
         </main>
       );
     }else {

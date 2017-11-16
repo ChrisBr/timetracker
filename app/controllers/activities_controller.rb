@@ -4,8 +4,15 @@ class ActivitiesController < ApplicationController
   # GET /activities
   # GET /activities.json
   def index
-    @doing = @current_user.activities.includes(:tag).doing.first
-    @today = @current_user.activities.finished.group(:rfid).sum(:duration)
+    # TODO: Move to a dedicated dashboard controller
+    result = {
+      daily_doughnut_chart: @current_user.daily_doughnut_chart,
+      doing: @current_user.doing,
+      first_entry_today: @current_user.log_in_time,
+      total_entries_today: @current_user.activities.today.count,
+      hours_today: @current_user.activities.today.sum(:duration)
+    }
+    render json: result.to_json
   end
 
   # POST /activities

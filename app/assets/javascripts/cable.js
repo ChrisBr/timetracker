@@ -15,5 +15,7 @@
 function loadActioncable(){
   this.App || (this.App = {});
 
-  App.cable = ActionCable.createConsumer('/cable?auth_token=' + sessionStorage.getItem('auth_token'));
+  if(sessionStorage.getItem('auth_token')){
+    App.cable = ActionCable.createConsumer('/cable?auth_token=' + sessionStorage.getItem('auth_token'));
+  }
 }

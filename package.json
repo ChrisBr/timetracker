@@ -5,10 +5,12 @@
     "@rails/webpacker": "^3.0.2",
     "axios": "^0.17.1",
     "babel-preset-react": "^6.24.1",
+    "chart.js": "^2.7.1",
     "coffeescript": "1.12.7",
     "dateformat": "^3.0.2",
     "prop-types": "^15.6.0",
     "react": "^16.1.1",
+    "react-chartjs-2": "^2.6.4",
     "react-dom": "^16.1.1",
     "react_ujs": "^2.4.2"
   },
